@@ -43,6 +43,13 @@ FALLBACK_MODEL = "gemma3:4b"    # Used if 12b is unavailable
 OLLAMA_PORT = 11434
 FASTAPI_PORT = 8000
 
+# Notebook version marker. If Colab is running an older notebook
+# this value will be missing or stale -> re-import the new notebook.
+NOTEBOOK_VERSION = "2026-09-01-OLLAMA-FIX-V2"
+
+print("Image to Prompt AI - Colab Backend")
+print(f"Notebook version: {NOTEBOOK_VERSION}")
+
 print("[1/8] Configuration ............ OK")
 print(f"  Model: {MODEL}  |  Fallback: {FALLBACK_MODEL}")
 """))
@@ -168,6 +175,7 @@ INSTALLER_PATH = "/content/ollama-install.sh"
 OLLAMA_BIN = "/usr/local/bin/ollama"
 
 print("[4/8] Installing Ollama ........ ")
+print(f"Notebook version: {NOTEBOOK_VERSION}")
 print()
 
 # -- 4a. Detect -> verify the Colab environment -------------------
@@ -650,6 +658,8 @@ import subprocess
 import requests
 import time
 
+FASTAPI_LOG = "/content/fastapi.log"
+
 print("[8/8] Starting FastAPI .......... ")
 
 # Kill previous server if running
@@ -657,13 +667,15 @@ subprocess.run(["pkill", "-f", SERVER_PATH], capture_output=True)
 subprocess.run(["pkill", "-f", "uvicorn"], capture_output=True)
 time.sleep(2)
 
-server_proc = subprocess.Popen(
-    [sys.executable, "-m", "uvicorn", "image_to_prompt_server:app",
-     "--host", "0.0.0.0", "--port", str(FASTAPI_PORT)],
-    cwd="/content",
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
+print(f"  Starting FastAPI server (logs -> {FASTAPI_LOG})...")
+with open(FASTAPI_LOG, "w") as logf:
+    server_proc = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "image_to_prompt_server:app",
+         "--host", "0.0.0.0", "--port", str(FASTAPI_PORT)],
+        cwd="/content",
+        stdout=logf,
+        stderr=subprocess.STDOUT,
+    )
 
 # Wait for FastAPI to respond
 fastapi_ready = False
@@ -681,6 +693,14 @@ for _ in range(60):
 
 if not fastapi_ready:
     print("  ERROR: FastAPI failed to start.")
+    print(f"  Checking server log ({FASTAPI_LOG})...")
+    try:
+        with open(FASTAPI_LOG) as logf:
+            print("  --- fastapi log (tail) ---")
+            print(logf.read()[-2000:])
+            print("  --------------------------")
+    except Exception as e:
+        print("  Could not read FastAPI log:", e)
     print("  See Troubleshooting section below.")
 """))
 
