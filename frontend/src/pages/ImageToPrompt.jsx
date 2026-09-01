@@ -14,7 +14,7 @@ import { analyzeImage } from '../services/aiService'
 import { generateId } from '../config'
 
 export default function ImageToPrompt() {
-  const { status, endpoint } = useConnection()
+  const { status, endpoint, beginAnalysis, endAnalysis } = useConnection()
   const toast = useToast()
   const { addItem } = useHistory()
   const navigate = useNavigate()
@@ -101,6 +101,7 @@ export default function ImageToPrompt() {
     setTotalCount(filesToProcess.length)
     setCurrentIndex(0)
     setProgress(`Processing 1 of ${filesToProcess.length}`)
+    beginAnalysis()
 
     try {
       for (let i = 0; i < filesToProcess.length; i++) {
@@ -133,10 +134,11 @@ export default function ImageToPrompt() {
       }
       setProgress('')
     } finally {
+      endAnalysis()
       setProcessing(false)
       setProgress('')
     }
-  }, [items, updateItemStatus, addItem, toast])
+  }, [items, updateItemStatus, addItem, toast, beginAnalysis, endAnalysis])
 
   const handleRedo = useCallback((file) => {
     handleGenerate([file])
