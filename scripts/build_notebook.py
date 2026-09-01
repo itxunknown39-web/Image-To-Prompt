@@ -45,7 +45,7 @@ FASTAPI_PORT = 8000
 
 # Notebook version marker. If Colab is running an older notebook
 # this value will be missing or stale -> re-import the new notebook.
-NOTEBOOK_VERSION = "2026-09-01-OLLAMA-FIX-V2"
+NOTEBOOK_VERSION = "2026-09-01-OLLAMA-FIX-V3"
 
 print("Image to Prompt AI - Colab Backend")
 print(f"Notebook version: {NOTEBOOK_VERSION}")
@@ -270,7 +270,69 @@ if not _net_ok("ollama.com", 443):
     )
 print("  Connectivity OK (ollama.com:443 reachable).")
 
-# -- 4d. Install if not already present ----------------------------
+# -- 4d. Ensure zstd is available (required to extract Ollama) -------
+# The official Ollama installer extracts a tarball with zstd. A fresh Colab
+# runtime may not have zstd, so detect -> install via apt-get -> verify.
+# Idempotent: on later runs zstd is already present and nothing is reinstalled.
+print()
+print("  Checking zstd...")
+if shutil.which("zstd"):
+    print("  zstd already installed.")
+else:
+    print("  zstd not found. Installing zstd...")
+    # Detect the package manager; only use Debian/Ubuntu/Colab-compatible apt-get.
+    apt_bin = shutil.which("apt-get")
+    if not apt_bin:
+        print(
+            "  ERROR: No apt-get found and zstd is missing. "
+            "Unable to install zstd automatically."
+        )
+        raise RuntimeError(
+            "Unsupported package manager: zstd is missing but apt-get is not "
+            "available (expected a Debian/Ubuntu/Colab runtime). Install zstd "
+            "and re-run this cell."
+        )
+    # apt-get update (non-interactive)
+    print("    Running apt-get update (non-interactive)...")
+    try:
+        upd = subprocess.run(
+            [apt_bin, "update", "-qq"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=300,
+        )
+    except Exception as e:
+        raise RuntimeError(f"apt-get update could not be run: {e}")
+    if upd.returncode != 0:
+        raise RuntimeError(
+            "apt-get update failed.\\n" + (upd.stdout or "") +
+            "\\nUnable to refresh package lists. Check Colab internet access and re-run."
+        )
+    # apt-get install zstd (non-interactive)
+    print("    Installing zstd via apt-get (non-interactive)...")
+    try:
+        ins = subprocess.run(
+            [apt_bin, "install", "-y", "-qq", "zstd"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=600,
+        )
+    except Exception as e:
+        raise RuntimeError(f"apt-get install zstd could not be run: {e}")
+    # Show actual apt output on failure (and quietly on success).
+    if ins.returncode != 0:
+        raise RuntimeError(
+            "apt-get install zstd failed.\\n" + (ins.stdout or "") +
+            "\\nPlease scroll up for the full apt output."
+        )
+    # Verify afterward
+    if not shutil.which("zstd"):
+        raise RuntimeError("zstd was installed but is still not on PATH. Re-run this cell.")
+    print("  zstd installed successfully.")
+
+# -- 4e. Install Ollama if not already present -----------------------
 print()
 if env["ollama_path"] and os.path.exists(env["ollama_path"]):
     print("  Checking existing installation...")
