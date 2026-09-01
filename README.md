@@ -117,13 +117,25 @@ The notebook automatically handles:
 
 ## Vercel Deployment
 
-```bash
-cd frontend
-npm install
-npm run build
-```
+The repo root is configured for Vercel (see root `vercel.json`). When the project is imported, Vercel:
 
-Deploy the `frontend` directory to Vercel (e.g. via `vercel` CLI or the Vercel dashboard, building from `frontend/` with build command `npm run build` and output `dist`).
+- Builds with the root `npm run build` (`node scripts/deploy-build.js` builds the `frontend/` Vite app).
+- Serves the output directory `frontend/dist`.
+- Uses an SPA rewrite so all client-side routes ( `/`, `/image-to-prompt`, `/history`, `/settings`) resolve to `index.html`.
+
+To deploy:
+
+1. Connect the GitHub repo to Vercel.
+2. Leave **Root Directory** empty (the repo root now builds the whole app), or set it to `frontend/` and use build command `npm run build` / output `dist`.
+3. Add the environment variable below.
+4. Deploy.
+
+### Local build (same as the production build)
+
+```bash
+npm install        # installs root tooling (no runtime deps at root)
+npm run build      # builds frontend/ -> frontend/dist
+```
 
 ### Environment variables
 
@@ -256,7 +268,12 @@ image-to-prompt-ai/
 ├── colab/
 │   └── Image_to_Prompt_AI_Colab_T4.ipynb  # Ready-to-run Colab notebook
 ├── scripts/
-│   └── build_notebook.py              # Generates the Colab notebook from backend/main.py
+│   ├── build_notebook.py              # Generates the Colab notebook from backend/main.py
+│   └── deploy-build.js                # Cross-platform Vercel build orchestrator (builds frontend/)
+├── package.json                       # Root Vercel build orchestration
+├── vercel.json                        # Vercel root config (outputDirectory=frontend/dist + SPA rewrites)
+├── .gitignore
+├── PRD.md
 └── README.md
 ```
 

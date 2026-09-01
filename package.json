@@ -1,0 +1,11 @@
+{
+  "name": "image-to-prompt-ai",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Image to Prompt AI - frontend build orchestration (Vite + React app lives in ./frontend)",
+  "scripts": {
+    "build": "node scripts/deploy-build.js",
+    "dev": "npm --prefix frontend run dev",
+    "preview": "npm --prefix frontend run preview"
+  }
+}
