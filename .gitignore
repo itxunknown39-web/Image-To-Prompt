@@ -1,0 +1,28 @@
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment - never commit secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Python (the backend runs inside Colab, but keep local artifacts out)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
