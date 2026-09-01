@@ -555,8 +555,8 @@ Inside Settings:
 
 HOW TO CONNECT COLAB
 Step 1
-Open the saved Image to Prompt AI
-Google Colab notebook.
+Open the Image to Prompt AI Google Colab notebook
+(version-controlled in GitHub, loaded via the permanent GitHub-based Colab URL).
 
 Button:
 
@@ -565,6 +565,9 @@ Button:
 The frontend should have a configurable constant:
 
 COLAB_NOTEBOOK_URL
+
+It defaults to the canonical GitHub-based Colab URL:
+https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb
 Step 2
 Select:
 
@@ -1194,7 +1197,9 @@ Frontend may use:
 
 VITE_COLAB_NOTEBOOK_URL
 
-This should contain the saved notebook URL.
+This should contain the GitHub-based notebook URL. The default is:
+
+https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb
 
 Example:
 

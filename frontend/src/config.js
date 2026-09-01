@@ -11,7 +11,9 @@ export const AI_MODEL = 'Gemma 3 12B'
 export const AI_ENGINE = 'Ollama'
 export const AI_GPU = 'NVIDIA T4'
 
-export const COLAB_NOTEBOOK_URL = import.meta.env.VITE_COLAB_NOTEBOOK_URL || ''
+export const COLAB_NOTEBOOK_URL =
+  import.meta.env.VITE_COLAB_NOTEBOOK_URL ||
+  'https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb'
 
 export function getEndpoint() {
   try {

@@ -91,15 +91,26 @@ uvicorn backend.main:app --reload --port 8000
 
 ## Google Colab Setup
 
-The AI backend is provided as a ready-to-run notebook. You do **not** need to create backend files manually.
+The AI backend is provided as a version-controlled notebook. You do **not** need to create backend files manually, and you do **not** need a Google Drive copy.
 
-1. Open `colab/Image_to_Prompt_AI_Colab_T4.ipynb` (upload it to Google Drive).
-2. Open it in **Google Colab** (double-click the file, or `colab.research.google.com` → File → Upload notebook).
-3. Select **Runtime → Change runtime type → NVIDIA T4 GPU**.
-4. Click **Runtime → Run all**.
-5. Wait for the **IMAGE TO PROMPT AI — READY** status panel.
-6. Copy the **API Endpoint** (e.g. `https://xxxxx.trycloudflare.com`).
-7. Paste it into the website at **Settings → AI Connection**.
+### Google Colab Notebook
+
+**Permanent notebook:**
+
+```
+https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb
+```
+
+> The notebook lives in `colab/Image_to_Prompt_AI_Colab_T4.ipynb` on the `main` branch of this GitHub repository. Opening the permanent URL above loads the current notebook directly from GitHub — no Google Drive upload or copy is required.
+
+1. Open the permanent GitHub → Colab URL above.
+2. Select **Runtime → Change runtime type → NVIDIA T4 GPU** and click **Save**.
+3. Click **Runtime → Run all**.
+4. Wait for the **IMAGE TO PROMPT AI — READY** status panel.
+5. Copy the **API Endpoint** (e.g. `https://xxxxx.trycloudflare.com`).
+6. Paste it into the website at **Settings → AI Connection**.
+
+The notebook is version-controlled in GitHub. Whenever the notebook is updated on the `main` branch, opening the same permanent URL loads the latest version — there is no copied notebook to maintain.
 
 The notebook automatically handles:
 
@@ -139,13 +150,13 @@ npm run build      # builds frontend/ -> frontend/dist
 
 ### Environment variables
 
-Set **`VITE_COLAB_NOTEBOOK_URL`** in Vercel to your permanent saved Colab notebook URL:
+Set **`VITE_COLAB_NOTEBOOK_URL`** in Vercel to the permanent GitHub-based Colab notebook URL:
 
 ```
-VITE_COLAB_NOTEBOOK_URL=https://colab.research.google.com/drive/1XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+VITE_COLAB_NOTEBOOK_URL=https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb
 ```
 
-> **Important:** This is the *permanent notebook* URL, **not** the temporary API endpoint. The API endpoint is configured by the user in Settings and persists in `localStorage`.
+> **Important:** This is the *notebook* URL, **not** the temporary API endpoint. The API endpoint is configured by the user in Settings and persists in `localStorage`. If this variable is not set, the frontend automatically uses the same canonical GitHub-based Colab URL as its default — no Google Drive URL is used anywhere in this workflow.
 
 ---
 
@@ -208,8 +219,10 @@ If connected you'll see **● Connected**. The endpoint is saved in `localStorag
 See `frontend/.env.example`:
 
 ```
-VITE_COLAB_NOTEBOOK_URL=
+VITE_COLAB_NOTEBOOK_URL=https://colab.research.google.com/github/itxunknown39-web/Image-To-Prompt/blob/main/colab/Image_to_Prompt_AI_Colab_T4.ipynb
 ```
+
+This variable is optional — the frontend defaults to the same canonical GitHub-based Colab URL if it is unset.
 
 ---
 

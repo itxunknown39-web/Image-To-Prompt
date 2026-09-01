@@ -8,7 +8,7 @@ export default function ColabSetup() {
 
   const handleOpenNotebook = () => {
     if (!hasColabUrl) {
-      toast.error('Colab notebook URL is not configured. Set VITE_COLAB_NOTEBOOK_URL.')
+      toast.error('Colab notebook URL is not configured. Ensure VITE_COLAB_NOTEBOOK_URL is set.')
     }
   }
 
@@ -27,9 +27,10 @@ export default function ColabSetup() {
       <div className="flex items-start gap-3 mb-1">
         <Cloud className="w-5 h-5 text-accent mt-0.5" />
         <div>
-          <h2 className="text-base font-bold text-white">Google Colab AI Server</h2>
+          <h2 className="text-base font-bold text-white">Google Colab Backend</h2>
           <p className="text-sm text-dark-400 mt-0.5">
-            Run the AI server on a free NVIDIA T4 GPU using Google Colab.
+            Open the latest notebook in Google Colab and run the AI server on a free NVIDIA T4 GPU. The
+            notebook is version-controlled in GitHub, so this link always loads the current version.
           </p>
         </div>
       </div>
@@ -40,12 +41,12 @@ export default function ColabSetup() {
             <Info className="w-4 h-4" /> Colab notebook URL is not configured.
           </div>
           <p className="text-xs text-dark-300 leading-relaxed">
-            Add <code className="text-amber-200">VITE_COLAB_NOTEBOOK_URL</code> to your{' '}
+            Set the GitHub-based Colab notebook URL in your{' '}
             <code className="text-amber-200">frontend/.env</code> file (or the{' '}
-            <strong className="text-dark-200">Frontend Environment Variables</strong> in Vercel) with the
-            permanent Colab notebook URL, e.g.{' '}
-            <code className="text-amber-200">https://colab.research.google.com/drive/XXXXXXXX</code>.
-            This is the <strong className="text-dark-200">notebook</strong> URL, not the temporary API endpoint.
+            <strong className="text-dark-200">Frontend Environment Variables</strong> in Vercel) via{' '}
+            <code className="text-amber-200">VITE_COLAB_NOTEBOOK_URL</code> (defaults to the
+            version-controlled notebook in GitHub). This is the <strong className="text-dark-200">notebook</strong>{' '}
+            URL, not the temporary API endpoint.
           </p>
           <button
             onClick={handleOpenNotebook}
@@ -66,7 +67,7 @@ export default function ColabSetup() {
           <div className="pb-4">
             <div className="text-sm font-medium text-dark-200">Open Colab</div>
             <div className="text-xs text-dark-500 mt-1">
-              Open the saved notebook. It opens in a new tab.
+              Open the latest notebook from GitHub. The permanent link always loads the current version from the <code>main</code> branch. It opens in a new tab.
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <a
@@ -125,8 +126,8 @@ export default function ColabSetup() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-dark-800 rounded-lg p-4 border border-dark-700/50">
             <div className="text-[10px] uppercase tracking-wider text-dark-500 mb-1"><CheckCircle2 className="inline w-3 h-3 mr-1" />Colab Notebook</div>
-            <div className="text-sm text-dark-200">Permanent saved notebook</div>
-            <div className="text-xs text-dark-500 mt-1">Same URL every session. Configure once as VITE_COLAB_NOTEBOOK_URL.</div>
+            <div className="text-sm text-dark-200">Version-controlled in GitHub</div>
+            <div className="text-xs text-dark-500 mt-1">Always points to the latest notebook from the <code>main</code> branch. Same URL every session.</div>
           </div>
           <div className="bg-dark-800 rounded-lg p-4 border border-accent/30">
             <div className="text-[10px] uppercase tracking-wider text-accent mb-1"><Server className="inline w-3 h-3 mr-1" />API Endpoint</div>
