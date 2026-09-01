@@ -1,116 +1,135 @@
-import { useState } from 'react'
-import { ExternalLink, Info, CheckCircle2, Copy } from 'lucide-react'
+import { ExternalLink, Cloud, Server, Copy, Info, CheckCircle2 } from 'lucide-react'
 import { COLAB_NOTEBOOK_URL } from '../../context/ConnectionContext'
 import { useToast } from '../../context/ToastContext'
 
-const STEPS = [
-  {
-    title: 'Open the saved Image to Prompt AI Google Colab notebook',
-    detail: 'This is your permanent notebook. It stays the same every session.',
-    action: COLAB_NOTEBOOK_URL,
-    actionLabel: 'Open Colab Notebook ↗',
-  },
-  {
-    title: 'Select Runtime → Change runtime type → NVIDIA T4 GPU',
-    detail: 'The T4 GPU is essential for running Gemma 3 12B.',
-  },
-  {
-    title: 'Click Runtime → Run all',
-    detail: 'The notebook automatically performs all setup. No manual commands needed.',
-  },
-  {
-    title: 'Wait for "IMAGE TO PROMPT AI SERVER READY"',
-    detail: 'The notebook will show a status panel when everything is ready.',
-  },
-  {
-    title: 'Copy the API endpoint',
-    detail: 'It looks like https://xxxxx.trycloudflare.com — this is temporary and unique to this session.',
-  },
-  {
-    title: 'Return to Settings → AI Connection',
-    detail: 'Paste the URL and click Test Connection.',
-  },
-]
-
 export default function ColabSetup() {
   const toast = useToast()
-  const [showAll, setShowAll] = useState(false)
+  const hasColabUrl = Boolean(COLAB_NOTEBOOK_URL)
 
-  const handleCopyNotebook = async () => {
-    if (!COLAB_NOTEBOOK_URL) {
+  const handleOpenNotebook = () => {
+    if (!hasColabUrl) {
       toast.error('Colab notebook URL is not configured. Set VITE_COLAB_NOTEBOOK_URL.')
-      return
     }
+  }
+
+  const handleCopy = async (value, label) => {
+    if (!value) return
     try {
-      await navigator.clipboard.writeText(COLAB_NOTEBOOK_URL)
-      toast.success('Notebook URL copied')
+      await navigator.clipboard.writeText(value)
+      toast.success(`${label} copied`)
     } catch {
-      toast.error('Could not copy URL')
+      toast.error('Could not copy')
     }
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="glass-card p-6 rounded-xl">
-        <div className="flex items-center gap-2 text-sm font-semibold text-white mb-4">
-          <Info className="w-4 h-4 text-accent" /> HOW TO CONNECT COLAB
+    <div className="glass-card p-6 rounded-xl animate-fade-in">
+      <div className="flex items-start gap-3 mb-1">
+        <Cloud className="w-5 h-5 text-accent mt-0.5" />
+        <div>
+          <h2 className="text-base font-bold text-white">Google Colab AI Server</h2>
+          <p className="text-sm text-dark-400 mt-0.5">
+            Run the AI server on a free NVIDIA T4 GPU using Google Colab.
+          </p>
         </div>
-
-        <div className={`space-y-4 ${showAll ? '' : ''}`}>
-          {STEPS.map((step, i) => (
-            <div key={i} className="flex gap-4 animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
-              <div className="flex flex-col items-center">
-                <div className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center shrink-0">
-                  {i + 1}
-                </div>
-                {i < STEPS.length - 1 && <div className="w-px flex-1 bg-dark-700" />}
-              </div>
-              <div className={`pb-2 ${i < STEPS.length - 1 ? 'border-b border-dark-800' : ''} ${showAll || i < 2 ? '' : 'hidden'}`}>
-                <div className="text-sm font-medium text-dark-200">{step.title}</div>
-                <div className="text-xs text-dark-500 mt-1">{step.detail}</div>
-                {step.action && (
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <a
-                      href={step.action}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`btn-primary text-xs ${step.action ? '' : 'opacity-50 pointer-events-none'}`}
-                      aria-disabled={!step.action}
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" /> {step.actionLabel}
-                    </a>
-                    {!step.action && (
-                      <button onClick={handleCopyNotebook} className="btn-secondary text-xs">
-                        <Copy className="w-3.5 h-3.5" /> Copy notebook URL
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {!showAll && (
-          <button
-            onClick={() => setShowAll(true)}
-            className="btn-ghost text-xs mt-2"
-          >
-            Show all steps
-          </button>
-        )}
       </div>
 
-      <div className="glass-card p-6 rounded-xl">
-        <div className="text-sm font-semibold text-white mb-3">Notebook URL vs API Endpoint</div>
+      {!hasColabUrl && (
+        <div className="mt-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 space-y-1">
+          <div className="flex items-center gap-2 text-amber-300 text-sm font-medium">
+            <Info className="w-4 h-4" /> Colab notebook URL is not configured.
+          </div>
+          <p className="text-xs text-dark-300 leading-relaxed">
+            Add <code className="text-amber-200">VITE_COLAB_NOTEBOOK_URL</code> to your{' '}
+            <code className="text-amber-200">frontend/.env</code> file (or the{' '}
+            <strong className="text-dark-200">Frontend Environment Variables</strong> in Vercel) with the
+            permanent Colab notebook URL, e.g.{' '}
+            <code className="text-amber-200">https://colab.research.google.com/drive/XXXXXXXX</code>.
+            This is the <strong className="text-dark-200">notebook</strong> URL, not the temporary API endpoint.
+          </p>
+          <button
+            onClick={handleOpenNotebook}
+            className="btn-secondary text-xs mt-2"
+            aria-disabled={true}
+          >
+            <ExternalLink className="w-3.5 h-3.5" /> Open Colab Notebook ↗
+          </button>
+        </div>
+      )}
+
+      <div className="mt-5 space-y-4">
+        <div className="flex gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center shrink-0">1</div>
+            <div className="w-px flex-1 bg-dark-700" />
+          </div>
+          <div className="pb-4">
+            <div className="text-sm font-medium text-dark-200">Open Colab</div>
+            <div className="text-xs text-dark-500 mt-1">
+              Open the saved notebook. It opens in a new tab.
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <a
+                href={hasColabUrl ? COLAB_NOTEBOOK_URL : undefined}
+                onClick={hasColabUrl ? undefined : handleOpenNotebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-xs"
+                aria-disabled={!hasColabUrl}
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> Open Colab Notebook ↗
+              </a>
+              {hasColabUrl && (
+                <button onClick={() => handleCopy(COLAB_NOTEBOOK_URL, 'Notebook URL')} className="btn-secondary text-xs">
+                  <Copy className="w-3.5 h-3.5" /> Copy
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center shrink-0">2</div>
+            <div className="w-px flex-1 bg-dark-700" />
+          </div>
+          <div className="pb-4">
+            <div className="text-sm font-medium text-dark-200">Start the server</div>
+            <div className="text-xs text-dark-500 mt-1">
+              Runtime → Change runtime type → select <strong className="text-dark-200">NVIDIA T4 GPU</strong> → Run All.
+              The notebook handles Ollama, Gemma 3 Vision, FastAPI, the Cloudflare Tunnel and the health check automatically.
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center shrink-0">3</div>
+            <div className="w-px flex-1 bg-dark-700" />
+          </div>
+          <div className="pb-4">
+            <div className="text-sm font-medium text-dark-200">Copy your API endpoint</div>
+            <div className="text-xs text-dark-500 mt-1">
+              Colab shows <strong className="text-dark-200">SERVER READY</strong> and an{' '}
+              <strong className="text-accent">API ENDPOINT</strong> like{' '}
+              <strong className="text-dark-200">https://xxxxx.trycloudflare.com</strong>. Copy it and paste it
+              into the <strong className="text-dark-200">API Endpoint</strong> field below, then click{' '}
+              <strong className="text-dark-200">Test Connection</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 bg-dark-800 rounded-lg p-4 border border-dark-700/50">
+        <div className="text-sm font-medium text-white mb-3">Notebook URL vs API Endpoint</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-dark-800 rounded-lg p-4 border border-dark-700/50">
-            <div className="text-[10px] uppercase tracking-wider text-dark-500 mb-1">Colab Notebook</div>
+            <div className="text-[10px] uppercase tracking-wider text-dark-500 mb-1"><CheckCircle2 className="inline w-3 h-3 mr-1" />Colab Notebook</div>
             <div className="text-sm text-dark-200">Permanent saved notebook</div>
-            <div className="text-xs text-dark-500 mt-1">Same URL every session. Configure once in your environment.</div>
+            <div className="text-xs text-dark-500 mt-1">Same URL every session. Configure once as VITE_COLAB_NOTEBOOK_URL.</div>
           </div>
           <div className="bg-dark-800 rounded-lg p-4 border border-accent/30">
-            <div className="text-[10px] uppercase tracking-wider text-accent mb-1">API Endpoint</div>
+            <div className="text-[10px] uppercase tracking-wider text-accent mb-1"><Server className="inline w-3 h-3 mr-1" />API Endpoint</div>
             <div className="text-sm text-dark-200">Temporary runtime URL</div>
             <div className="text-xs text-dark-500 mt-1">New URL each Colab session. Paste it in AI Connection.</div>
           </div>

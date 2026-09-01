@@ -3,6 +3,7 @@ import { Save, Cog, Wallet, HardDrive, CheckCircle2 } from 'lucide-react'
 import { useConnection } from '../../context/ConnectionContext'
 import { useToast } from '../../context/ToastContext'
 import { normalizeEndpoint } from '../../config'
+import ColabSetup from './ColabSetup'
 
 export default function ConnectionSettings() {
   const { endpoint, saveEndpoint, testConnection, checking, status, connectionInfo } = useConnection()
@@ -31,6 +32,8 @@ export default function ConnectionSettings() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <ColabSetup />
+
       <div className="glass-card p-6 rounded-xl space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-white mb-4">
           <Cog className="w-4 h-4 text-accent" /> AI CONNECTION
